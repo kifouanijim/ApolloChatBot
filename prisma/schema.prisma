@@ -21,7 +21,7 @@ model User {
 model FAQ {
   id        Int      @id @default(autoincrement())
   question  String
-  answer    String
+  answer    String   @db.Text    // <- ici, on passe à TEXT
   keywords  String   // mots-clés séparés par des virgules
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
