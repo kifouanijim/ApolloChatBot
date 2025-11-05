@@ -1,0 +1,12 @@
+[
+  {
+    "question": "Puis-je annuler un cours",
+    "answer": "Oui, mais attention : si vous vous désinscrivez moins de 18h avant le début du cours, l’annulation est hors délai et le crédit sera dû.",
+    "keywords": ["annuler", "cours", "crédit", "désinscription"]
+  },
+  {
+    "question": "Comment utiliser un code promo WP",
+    "answer": "Allez dans l’application mobile, onglet « studio » puis « packs ». Choisissez la cotisation annuelle + 50 crédits, puis entrez le code promo OB50.",
+    "keywords": ["code promo", "welcome pack", "réduction"]
+  }
+]
