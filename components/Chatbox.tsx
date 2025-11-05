@@ -1,73 +1,58 @@
-"use client";
+import { useState } from "react";
 
-import { useState, useRef, useEffect, FormEvent } from "react";
-
-type Message = {
-  type: "user" | "bot";
+interface Message {
+  sender: "user" | "bot";
   text: string;
-};
+}
 
 export default function Chatbox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false); // ✅ Indicateur de frappe
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 🔄 Scroll automatique vers le bas
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = input;
-    setMessages((prev) => [...prev, { type: "user", text: userMessage }]);
+    const userMessage: Message = { sender: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setIsTyping(true);
 
     try {
-      const res = await fetch("/api/chat", {
+      const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: input }),
       });
 
-      const data = await res.json();
+      // On essaie de parser le JSON, sinon on renvoie un message d'erreur
+      const data = await response.json().catch(() => ({
+        reply: "Erreur: impossible de récupérer la réponse 😅",
+      }));
 
-      // 🕓 Effet "le bot écrit..."
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { type: "bot", text: data.reply }]);
-        setIsTyping(false);
-      }, 1000);
+      const botMessage: Message = { sender: "bot", text: data.reply };
+      setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        { type: "bot", text: "Une erreur est survenue 😅" },
-      ]);
-      setIsTyping(false);
+      const botMessage: Message = {
+        sender: "bot",
+        text: "Erreur réseau 😅, réessaie plus tard.",
+      };
+      setMessages((prev) => [...prev, botMessage]);
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") sendMessage();
+  };
+
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 420,
-        margin: "40px auto",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
+    <div style={{ maxWidth: 500, margin: "auto", padding: 20 }}>
       <div
         style={{
-          height: 420,
           border: "1px solid #ccc",
-          borderRadius: 10,
-          padding: 12,
+          borderRadius: 8,
+          padding: 10,
+          height: 400,
           overflowY: "auto",
-          background: "#fafafa",
           marginBottom: 10,
         }}
       >
@@ -75,92 +60,37 @@ export default function Chatbox() {
           <div
             key={idx}
             style={{
-              textAlign: msg.type === "user" ? "right" : "left",
-              marginBottom: 10,
+              textAlign: msg.sender === "user" ? "right" : "left",
+              margin: "5px 0",
             }}
           >
             <span
               style={{
                 display: "inline-block",
-                padding: "8px 14px",
+                padding: "8px 12px",
                 borderRadius: 16,
-                backgroundColor:
-                  msg.type === "user" ? "#007bff" : "#e5e5e5",
-                color: msg.type === "user" ? "#fff" : "#000",
-                maxWidth: "80%",
-                wordWrap: "break-word",
+                backgroundColor: msg.sender === "user" ? "#0070f3" : "#e5e5ea",
+                color: msg.sender === "user" ? "#fff" : "#000",
               }}
             >
               {msg.text}
             </span>
           </div>
         ))}
-
-        {/* ✨ Animation “le bot écrit...” */}
-        {isTyping && (
-          <div style={{ textAlign: "left", color: "#666", paddingLeft: 6 }}>
-            <span className="dot" style={dotStyle(0)}></span>
-            <span className="dot" style={dotStyle(1)}></span>
-            <span className="dot" style={dotStyle(2)}></span>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
       </div>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex" }}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Pose ta question..."
-          style={{
-            flex: 1,
-            padding: 10,
-            borderRadius: 8,
-            border: "1px solid #ccc",
-            outline: "none",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            marginLeft: 8,
-            padding: "10px 16px",
-            borderRadius: 8,
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Envoyer
-        </button>
-      </form>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyPress}
+        placeholder="Écris ton message..."
+        style={{
+          width: "100%",
+          padding: "10px",
+          borderRadius: 8,
+          border: "1px solid #ccc",
+        }}
+      />
     </div>
   );
-}
-
-// 🔵 Animation des points "..." pour le bot
-const dotStyle = (index: number) => ({
-  display: "inline-block",
-  width: 8,
-  height: 8,
-  margin: "0 3px",
-  backgroundColor: "#888",
-  borderRadius: "50%",
-  animation: `bounce 1.4s infinite ease-in-out both`,
-  animationDelay: `${index * 0.2}s`,
-});
-
-// 🔁 Injection du style de l’animation dans le document
-if (typeof document !== "undefined") {
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
-    }
-  `;
-  document.head.appendChild(style);
 }

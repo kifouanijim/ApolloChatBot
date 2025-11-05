@@ -1,8 +1,8 @@
+// app/api/chatbot/route.ts
 import { NextResponse } from "next/server";
-import { FAQItem } from "@/type/faq";
-import faqData from "../../../data/faq.json";
+import { PrismaClient } from "../../../generated/prisma";
 
-const faq: FAQItem[] = faqData as FAQItem[];
+const prisma = new PrismaClient();
 
 // Fonction de similarité simple
 function similarity(str1: string, str2: string): number {
@@ -16,31 +16,31 @@ export async function POST(req: Request) {
   const { message } = await req.json();
   const question = message.toLowerCase();
 
-  // 🔍 Recherche directe par mots-clés
-  const result = faq.find((item: FAQItem) =>
-    item.keywords.some((k: string) => question.includes(k.toLowerCase()))
+  // Récupère toutes les FAQ depuis MySQL
+  const faqData = await prisma.fAQ.findMany();
+
+  // Recherche par mots-clés
+  const result = faqData.find((item) =>
+    item.keywords.split(",").some((k) => question.includes(k.toLowerCase()))
   );
 
   if (result) {
     return NextResponse.json({ reply: result.answer });
   }
 
-  // 🧠 Sinon, recherche par similarité (fallback)
+  // Recherche par similarité (fallback)
   let bestMatch: { score: number; answer: string } = { score: 0, answer: "" };
-
-  for (const item of faq) {
+  for (const item of faqData) {
     const score = similarity(question, item.question);
     if (score > bestMatch.score) {
       bestMatch = { score, answer: item.answer };
     }
   }
 
-  // 🎯 Si on trouve une correspondance approximative (30% de ressemblance)
   if (bestMatch.score >= 0.3) {
     return NextResponse.json({ reply: bestMatch.answer });
   }
 
-  // 📨 Réponse par défaut
   return NextResponse.json({
     reply:
       "Je n’ai pas trouvé de réponse à cette question 😅. Vous pouvez écrire à contact@apollosportingclub.com.",
