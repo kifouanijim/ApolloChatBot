@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 const API_URL = "https://apollo-chat-bot-7wc9-git-main-jims-projects-ddd71c9f.vercel.app/api/chatbot";
 
 
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
