@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-const API_URL = "https://apollo-chat-bot-7wc9.vercel.app/"; // <--- mettre l'URL de ton API sur Vercel
+// ⚡️ Met l'URL complète de ton endpoint Vercel
+const API_URL = "https://apollo-chat-bot-7wc9.vercel.app/api/chatbot";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ export default function ChatWidget() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+
     const userMessage = { role: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");

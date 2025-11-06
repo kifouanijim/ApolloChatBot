@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { message } = await req.json();
   const question = message.toLowerCase();
 
-  // Récupère toutes les FAQ depuis MySQL
+  // Récupère toutes les FAQ depuis la base MySQL
   const faqData = await prisma.fAQ.findMany();
 
   // Recherche par mots-clés
@@ -25,7 +25,12 @@ export async function POST(req: Request) {
   );
 
   if (result) {
-    return NextResponse.json({ reply: result.answer });
+    const res = NextResponse.json({ reply: result.answer });
+    // ⚠️ CORS : autorise uniquement le site officiel d’Apollo
+    res.headers.set("Access-Control-Allow-Origin", "https://www.apollo.fr");
+    res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.headers.set("Access-Control-Allow-Headers", "Content-Type");
+    return res;
   }
 
   // Recherche par similarité (fallback)
@@ -37,12 +42,25 @@ export async function POST(req: Request) {
     }
   }
 
-  if (bestMatch.score >= 0.3) {
-    return NextResponse.json({ reply: bestMatch.answer });
-  }
+  const reply =
+    bestMatch.score >= 0.3
+      ? bestMatch.answer
+      : "Je n’ai pas trouvé de réponse à cette question 😅. Vous pouvez écrire à contact@apollosportingclub.com.";
 
-  return NextResponse.json({
-    reply:
-      "Je n’ai pas trouvé de réponse à cette question 😅. Vous pouvez écrire à contact@apollosportingclub.com.",
-  });
+  const res = NextResponse.json({ reply });
+  // ⚠️ CORS
+  res.headers.set("Access-Control-Allow-Origin", "https://www.apollo.fr");
+  res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+  return res;
+}
+
+// Gestion du préflight OPTIONS pour CORS
+export async function OPTIONS() {
+  const res = NextResponse.json({});
+  res.headers.set("Access-Control-Allow-Origin", "https://www.apollo.fr");
+  res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return res;
 }
