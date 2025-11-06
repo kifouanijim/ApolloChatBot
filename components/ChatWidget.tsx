@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
+const API_URL = "https://apollo-chat-bot-7wc9.vercel.app/"; // <--- mettre l'URL de ton API sur Vercel
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
@@ -14,11 +16,14 @@ export default function ChatWidget() {
     setInput("");
 
     try {
-      const res = await fetch("/api/chatbot", {
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
       });
+
+      if (!res.ok) throw new Error("Erreur réseau");
+
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "bot", text: data.reply }]);
     } catch (err) {
@@ -40,7 +45,7 @@ export default function ChatWidget() {
       {open && (
         <div className="w-96 max-w-full h-[500px] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden border-2 border-red-600">
           {/* Header */}
-          <div className="flex justify-between items-center p-4 bg-red-600 text-white font-bold">
+          <div className="flex justify-between items-center p-4 bg-red-600 text-white font-bold cursor-move">
             <span>🤖 Apollo Chatbot</span>
             <button onClick={() => setOpen(false)}>
               <X size={20} className="text-white" />
@@ -53,9 +58,7 @@ export default function ChatWidget() {
               <div key={i} className={msg.role === "user" ? "text-right" : "text-left"}>
                 <span
                   className={`inline-block px-3 py-2 rounded-xl ${
-                    msg.role === "user"
-                      ? "bg-red-600 text-white"
-                      : "bg-black text-white"
+                    msg.role === "user" ? "bg-red-600 text-white" : "bg-black text-white"
                   }`}
                 >
                   {msg.text}
