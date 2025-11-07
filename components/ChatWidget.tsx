@@ -1,11 +1,12 @@
 "use client";
+
 import { useState } from "react";
 import { X } from "lucide-react";
 
-// Choisit l'URL de l'API selon l'environnement
+// ⚡️ Définir correctement l'URL de l'API selon l'environnement
 const API_URL =
   process.env.NODE_ENV === "production"
-    ? "https://apollo-chat-bot-1ukr-git-main-jims-projects-ddd71c9f.vercel.app"
+    ? "https://apollo-chat-bot-1ukr-git-main-jims-projects-ddd71c9f.vercel.app/api/chatbot"
     : "http://localhost:3000/api/chatbot";
 
 export default function ChatWidget() {
