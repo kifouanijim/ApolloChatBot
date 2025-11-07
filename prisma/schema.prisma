@@ -4,17 +4,17 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
-  email     String    @unique
-  credits   Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  email     String   @unique
+  credits   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   messages  Message[]
 }
 
@@ -33,7 +33,9 @@ model Message {
   text      String
   sender    String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "Message_userId_fkey")
+  
+  // Cette ligne gère la relation et crée la contrainte FKEY
+  user      User     @relation(fields: [userId], references: [id]) 
+  
+  // L'ancienne ligne @@index est SUPPRIMÉE pour éviter le conflit P1012.
 }

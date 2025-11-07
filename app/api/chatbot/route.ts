@@ -12,7 +12,7 @@ function similarity(str1: string, str2: string): number {
 }
 
 // 🌐 Autoriser localhost ET domaine en prod
-const ALLOWED_ORIGINS = ["http://localhost:3000", "https://www.apollo.fr"];
+const ALLOWED_ORIGINS = ["http://localhost:3000", "https://apollo-chat-bot-1ukr-git-main-jims-projects-ddd71c9f.vercel.app"];
 
 function setCorsHeaders(res: NextResponse, origin: string) {
   if (ALLOWED_ORIGINS.includes(origin)) {
