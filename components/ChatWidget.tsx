@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-// ⚡️ Met l'URL complète de ton endpoint Vercel
-const API_URL = "https://apollo-chat-bot-7wc9-git-main-jims-projects-ddd71c9f.vercel.app/api/chatbot";
-
-
+// Choisit l'URL de l'API selon l'environnement
+const API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://apollo-chat-bot-1ukr-git-main-jims-projects-ddd71c9f.vercel.app"
+    : "http://localhost:3000/api/chatbot";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
