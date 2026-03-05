@@ -3,12 +3,9 @@ import Fuse from "fuse.js";
 
 // ✅ Type FAQ
 type FAQ = {
-  id: number;
   question: string;
   answer: string;
   keywords: string;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 // --- données en dur pour faciliter le déploiement ---
