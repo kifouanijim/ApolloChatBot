@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model FAQ {
+  id        Int      @id @default(autoincrement())
+  question  String   @db.VarChar(191)
+  answer    String   @db.Text
+  keywords  String   @db.VarChar(191)
+  createdAt DateTime @default(now(3))
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(191)
+  email     String    @unique @db.VarChar(191)
+  credits   Int       @default(0)
+  createdAt DateTime  @default(now(3))
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  text      String   @db.VarChar(191)
+  sender    String   @db.VarChar(191)
+  createdAt DateTime @default(now(3))
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Message_userId_fkey")
+}
