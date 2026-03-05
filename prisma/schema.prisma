@@ -36,4 +36,6 @@ model Message {
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Message_userId_fkey")
+  // ✅ Cette ligne force Prisma à chercher le nom exact dans Supabase
+  @@map("Apollo_chatbot")
 }
