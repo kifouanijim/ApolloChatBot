@@ -12,7 +12,7 @@ model FAQ {
   question  String   @db.VarChar(191)
   answer    String   @db.Text
   keywords  String   @db.VarChar(191)
-  createdAt DateTime @default(now(3))
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
@@ -21,7 +21,7 @@ model User {
   name      String    @db.VarChar(191)
   email     String    @unique @db.VarChar(191)
   credits   Int       @default(0)
-  createdAt DateTime  @default(now(3))
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   messages  Message[]
 }
@@ -31,7 +31,7 @@ model Message {
   userId    Int
   text      String   @db.VarChar(191)
   sender    String   @db.VarChar(191)
-  createdAt DateTime @default(now(3))
+  createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Message_userId_fkey")
