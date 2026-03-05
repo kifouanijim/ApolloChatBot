@@ -5,17 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "seed": "ts-node --esm prisma/seed.ts"
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
-    "dotenv": "^17.2.3",
     "framer-motion": "^12.23.24",
     "fuse.js": "^7.1.0",
     "lucide-react": "^0.552.0",
-    "mysql2": "^3.15.3",
     "next": "^15.5.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -25,7 +21,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "babel-plugin-react-compiler": "1.0.0",
-    "prisma": "^6.19.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
