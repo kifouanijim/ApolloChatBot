@@ -95,8 +95,7 @@ export async function POST(req: Request) {
 
     const question = message.toLowerCase().trim();
 
-    // ✅ 3. Accès à la table FAQ (Prisma génère fAQ pour le modèle FAQ)
-    // Si TS souligne .fAQ, essaie .faq ou vérifie ton npx prisma generate
+    // ✅ 3. Utilisation des FAQ en dur
     const faqData = HARD_CODED_FAQS;
 
     // Stratégie 1: Exact match
