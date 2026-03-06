@@ -66,18 +66,17 @@ function keywordMatch(question: string, keywords: string): number {
   return keywordList.length > 0 ? matchCount / keywordList.length : 0;
 }
 
-// ✅ 2. Liste d'origines (pense à ajouter ton domaine de prod final ici)
-const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
-  "https://apollo-chat-bot-1ukr-git-main-jims-projects-ddd71c9f.vercel.app"
-];
-
+// ✅ 2. CORS pour tous les domaines (permissif pour les APIs publiques)
 function setCorsHeaders(res: NextResponse, origin: string | null): NextResponse {
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  // Accepter les requêtes depuis n'importe quel domaine (utile pour une API publique)
+  if (origin) {
     res.headers.set("Access-Control-Allow-Origin", origin);
+  } else {
+    res.headers.set("Access-Control-Allow-Origin", "*");
   }
-  res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  res.headers.set("Access-Control-Max-Age", "86400");
   return res;
 }
 
